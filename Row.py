@@ -2,7 +2,7 @@
 # >>>>> ПОДКЛЮЧЕНИЕ БИБЛИОТЕК И МОДУЛЕЙ <<<<< #
 #==========================================================================================#
 
-from dublib.Methods import WriteJSON
+from dublib.Methods import WriteJSON, ReadJSON
 from datetime import datetime
 import os
 
@@ -16,14 +16,8 @@ class Row():
 	# >>>>> КОНСТРУКТОР <<<<< #
 	#==========================================================================================#
 	
-	def __init__(self):
-		pass
+	def __init__(self, ID):
 
-	#==========================================================================================#
-	# >>>>> СОЗДАНИЕ РЯДА <<<<< #
-	#==========================================================================================#
-		
-	def Create(self, manager):
 		# Получение текущего года, месяца и дня.
 		YearNow = datetime.today().year
 		MonthNow = datetime.today().strftime("%m")
@@ -43,11 +37,12 @@ class Row():
 			},
 			"data": {}
 	}	
-		# Получение ID.
-		self.ID = manager.GetFreeID()
+		self.ID = ID
+		# self.ID = manager.GetFreeID()
 
-		# Создание файла json.
-		self.Save()
+		if os.path.exists(f"Data/{self.ID}.json"): self.__Data = ReadJSON(f"Data/{self.ID}.json")
+
+		else: self.Save()
 
 	#==========================================================================================#
 	# >>>>> УДАЛЕНИЕ РЯДА <<<<< #
@@ -62,15 +57,25 @@ class Row():
 	#==========================================================================================#
 
 	def Add(self, value: any, year: int = None, mounth: int = None, day: int = None) -> bool:
+		# Проверка: есть ли значение в ряде.
+		IsCreated = False
 
-		# Запись значения в ряд.
-		self.__Data["data"][str(year)] = dict()
-		self.__Data["data"][str(year)][str(mounth)] = dict()
-		self.__Data["data"][str(year)][str(mounth)][str(day)] = value
+		if str(year) in self.__Data["data"].keys():
+			if str(mounth) in self.__Data["data"][str(year)].keys():
+				if str(day) in self.__Data["data"][str(year)][str(mounth)].keys(): IsCreated = True
+		
+		if IsCreated == False:
 
-		# Сохранение файла json.
-		self.Save()
+			# Запись значения в ряд.
+			self.__Data["data"][str(year)] = dict()
+			self.__Data["data"][str(year)][str(mounth)] = dict()
+			self.__Data["data"][str(year)][str(mounth)][str(day)] = value
 
+			# Сохранение файла json.
+			self.Save()
+		
+		return IsCreated
+	
 	#==========================================================================================#
 	# >>>>> СОХРАНЕНИЕ ДАННЫХ ФАЙЛА JSON <<<<< #
 	#==========================================================================================#
@@ -78,7 +83,6 @@ class Row():
 	def Save(self):
 		# Сохранение файла json.
 		WriteJSON(f"Data/{self.ID}.json", self.__Data)
-
 		
 		
 
