@@ -6,10 +6,6 @@ from dublib.Methods import WriteJSON, ReadJSON
 from datetime import datetime
 import os
 
-#==========================================================================================#
-# >>>>> РЯД <<<<< #
-#==========================================================================================#
-	
 class Row():
 	
 	def __init__(self, ID: int):
@@ -40,7 +36,7 @@ class Row():
 		# Если нет - запись JSON.
 		else: self.__Save()
 
-	def __CheckUp(self, value: any, year: str, month: str, day: str) -> bool:
+	def __CheckUp(self, year: str, month: str, day: str) -> bool:
 
 		# Значение по умолчанию.
 		IsExists = False
@@ -76,13 +72,13 @@ class Row():
 		# Сохранение файла json.
 		WriteJSON(f"Data/{self.ID}.json", self.__Data)
 
-	def Add(self, value: any, date: datetime):
+	def AddValue(self, value: any, date: datetime):
 
 		# Форматирование даты.
 		year, month, day = self.__Format(date)
 
 		# Если значение в ряду не существует.
-		if not self.__CheckUp(value, year, month, day):
+		if not self.__CheckUp(year, month, day):
 		
 			# Запись значения в ряд.
 			if year not in self.__Data["data"].keys(): self.__Data["data"][year] = dict()
@@ -92,7 +88,7 @@ class Row():
 			# Сохранение файла json.
 			self.__Save()
 
-	def Get(self, date: datetime) -> any:
+	def GetValue(self, date: datetime) -> any:
 		
 		# Форматирование даты.
 		year, month, day = self.__Format(date)
@@ -102,18 +98,29 @@ class Row():
 		
 		return Value
 	
-	def Remove(self):
+	def RemoveValue(self, date: datetime):
+			
+		# Форматирование даты.
+		year, month, day = self.__Format(date)
 
-		# Удаление файла json.
-		os.remove(f"Data/{self.ID}.json")
+		# Если значение в ряду не существует.
+		if self.__CheckUp(year, month, day):
+		
+			# Запись значения в ряд.
+			if year not in self.__Data["data"].keys(): self.__Data["data"][year] = dict()
+			if month not in self.__Data["data"][year].keys(): self.__Data["data"][year][month] = dict()
+			if day in self.__Data["data"][year][month].keys(): del self.__Data["data"][year][month][day]
+
+			# Сохранение файла json.
+			self.__Save()
 	
-	def Replace(self, value: any, date: datetime):
+	def ReplaceValue(self, value: any, date: datetime):
 
 		# Форматирование даты.
 		year, month, day = self.__Format(date)
 
 		# Если значение в ряду существует.
-		if self.__CheckUp(value, year, month, day):
+		if self.__CheckUp(year, month, day):
 
 			# Замена значения в ряду.
 			self.__Data["data"][year][month][day] = value
@@ -144,25 +151,3 @@ class Row():
 		
 		return Segment
 	
-
-
-
-
-
-
-
-
-
-
-
-	
-		
-		
-
-
-
-		
-
-		
-		
-
