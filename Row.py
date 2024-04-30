@@ -72,7 +72,7 @@ class Row():
 		# Сохранение файла json.
 		WriteJSON(f"Data/{self.ID}.json", self.__Data)
 
-	def AddValue(self, value: any, date: datetime):
+	def SetData(self, value: any, date: datetime):
 
 		# Форматирование даты.
 		year, month, day = self.__Format(date)
@@ -88,7 +88,7 @@ class Row():
 			# Сохранение файла json.
 			self.__Save()
 
-	def GetValue(self, date: datetime) -> any:
+	def GetData(self, date: datetime) -> any:
 		
 		# Форматирование даты.
 		year, month, day = self.__Format(date)
@@ -151,3 +151,44 @@ class Row():
 		
 		return Segment
 	
+	def SetBaseValue(self, key: str, value: str):
+		self.__Data[key] = value
+
+		# Сохранение файла json.
+		self.__Save()
+
+	def SetDescription(self, key: str, value: str):
+		self.__Data["description"][key] = value
+
+		# Сохранение файла json.
+		self.__Save()
+
+	def SetMetaInfo(self, key: str):
+
+		year, month, day = self.__Format(datetime.today())
+
+		self.__Data["metainfo"][key] = str(f"{year}-{month}-{day}")
+
+		# Сохранение файла json.
+		self.__Save()
+
+	def GetValue(self, path: str) -> str:
+		
+		Count = path.count("/")
+
+		if Count == 0: Value = self.__Data[path]
+		if Count == 1:
+			Value1, Value2 = path.split("/")
+			Value = self.__Data[Value1][Value2]
+
+		return Value
+
+
+	@property
+	def name(self):
+		return self.GetValue("name")
+
+Row(1).GetValue(path = "metainfo/update_date")
+Row(0).name
+
+
