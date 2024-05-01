@@ -7,6 +7,30 @@ from datetime import datetime
 import os
 
 class Row():
+
+	@property
+	def name(self):
+		return self.GetValue("name")
+	
+	@property
+	def color(self):
+		return self.GetValue("color")
+	
+	@property
+	def owner(self):
+		return self.GetValue("owner")	
+
+	@property
+	def type(self):
+		return self.GetValue("description/type")
+	
+	@property
+	def creation_date(self):
+		return self.GetValue("metainfo/creation_date")
+	
+	@property
+	def update_date(self):
+		return self.GetValue("metainfo/update_date")
 	
 	def __init__(self, ID: int):
 
@@ -184,11 +208,9 @@ class Row():
 		return Value
 
 
-	@property
-	def name(self):
-		return self.GetValue("name")
 
-Row(1).GetValue(path = "metainfo/update_date")
-Row(0).name
+
+
+
 
 
