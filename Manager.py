@@ -46,15 +46,7 @@ class Manager():
         for File in Files: RowsID.append(int(File.replace(".json", "")))
 
         return RowsID
-
-    def CreateRow(self):
-
-        # Получение свободного ID.
-        ID = self.__GetFreeID()
-
-        # Запись ID.
-        self.__Rows[ID] = Row(ID)
-
+    
     def __GetFreeID(self):
 
         # Получение списка ID.
@@ -85,6 +77,14 @@ class Manager():
         else: ID = 1
 
         return ID
+
+    def CreateRow(self):
+
+        # Получение свободного ID.
+        ID = self.__GetFreeID()
+
+        # Запись ID.
+        self.__Rows[ID] = Row(ID)
     
     def RemoveRow(self, ID):
 
@@ -93,4 +93,8 @@ class Manager():
 
         # Удаление файла json.
         os.remove(f"Data/{self.ID}.json")
- 
+    
+    def GetRow(self, ID) -> Row:
+        return self.__Rows[ID]
+    
+    

@@ -3,7 +3,8 @@
 #==========================================================================================#
 
 from dublib.Methods import WriteJSON, ReadJSON
-from datetime import datetime
+from collections import OrderedDict
+from datetime import date
 import os
 
 class Row():
@@ -35,7 +36,7 @@ class Row():
 	def __init__(self, ID: int):
 
 		# Форматирование даты.
-		year, month, day = self.__Format(datetime.today())
+		year, month, day = self.__Format(date.today())
 
 		# Данные ряда.
 		self.__Data = {
@@ -72,31 +73,31 @@ class Row():
 
 		return IsExists
 
-	def __Format(self, datetime: datetime) -> str:
+	def __Format(self, date: date) -> str:
 		"""Форматирует datetime в набор строковых величин.
 		Year - строковое представление четырёхзначного число.
 		Month - строковое представление двухзначного числа.
 		Day - строковое представление двухзначного числа."""
 
-		Year = datetime.strftime("%Y")
-		Month = datetime.strftime("%m")
-		Day = datetime.strftime("%d")
+		Year = date.strftime("%Y")
+		Month = date.strftime("%m")
+		Day = date.strftime("%d")
 		
 		return Year, Month, Day
 	
-	def __Standart(self, year: str, month: str, day: str) -> datetime:
-		"""Форматирует строковое прредставление в datetime."""
+	def __Standart(self, year: str, month: str, day: str) -> date:
+		"""Форматирует строковое прредставление в date."""
 
-		Datetime = datetime(int(year), int(month), int(day))
+		Date = date(int(year), int(month), int(day))
 		
-		return Datetime
+		return Date
 
 	def __Save(self):
 
 		# Сохранение файла json.
 		WriteJSON(f"Data/{self.ID}.json", self.__Data)
 
-	def SetData(self, value: any, date: datetime):
+	def SetData(self, value: any, date: date):
 
 		# Форматирование даты.
 		year, month, day = self.__Format(date)
@@ -112,7 +113,7 @@ class Row():
 			# Сохранение файла json.
 			self.__Save()
 
-	def GetData(self, date: datetime) -> any:
+	def GetData(self, date: date) -> any:
 		
 		# Форматирование даты.
 		year, month, day = self.__Format(date)
@@ -122,7 +123,7 @@ class Row():
 		
 		return Value
 	
-	def RemoveValue(self, date: datetime):
+	def RemoveValue(self, date: date):
 			
 		# Форматирование даты.
 		year, month, day = self.__Format(date)
@@ -138,7 +139,7 @@ class Row():
 			# Сохранение файла json.
 			self.__Save()
 	
-	def ReplaceValue(self, value: any, date: datetime):
+	def ReplaceValue(self, value: any, date: date):
 
 		# Форматирование даты.
 		year, month, day = self.__Format(date)
@@ -152,7 +153,7 @@ class Row():
 			# Сохранение файла json.
 			self.__Save()
 
-	def GetSegment(self, startdate: datetime, enddate: datetime)-> dict:
+	def GetSegment(self, startdate: date, enddate: date)-> dict:
 
 		# Словарь всех значений сегмента.
 		Segment = dict()
@@ -168,12 +169,14 @@ class Row():
 						AllValues[Keys]= values
 
 		# Определение дат, находящихся в данном промежутке.
-		for date, values in AllValues.items():
-			if startdate <= date and enddate >= date:
+		for datekey, values in AllValues.items():
+			if startdate <= datekey and enddate >= datekey:
 				# Запись в словарь.
-				Segment[date] = values
-		
-		return Segment
+				Segment[datekey] = values
+
+		OrderedSegment = OrderedDict(sorted(Segment.items()))
+  
+		return OrderedSegment
 	
 	def SetBaseValue(self, key: str, value: str):
 		self.__Data[key] = value
@@ -189,7 +192,7 @@ class Row():
 
 	def SetMetaInfo(self, key: str):
 
-		year, month, day = self.__Format(datetime.today())
+		year, month, day = self.__Format(date.today())
 
 		self.__Data["metainfo"][key] = str(f"{year}-{month}-{day}")
 
