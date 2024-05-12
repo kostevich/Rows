@@ -20,10 +20,6 @@ class Row():
 	@property
 	def owner(self):
 		return self.GetValue("owner")	
-
-	@property
-	def type(self):
-		return self.GetValue("description/type")
 	
 	@property
 	def creation_date(self):
@@ -43,9 +39,7 @@ class Row():
 			"name": None,
 			"color": None,
 			"owner": None,
-			"description": {
-				"type": None
-			},
+			"description": {},
 			"metainfo": {
 			"creation_date": f"{year}-{month}-{day}",
 				"update_date": None
@@ -97,7 +91,7 @@ class Row():
 		# Сохранение файла json.
 		WriteJSON(f"Data/{self.ID}.json", self.__Data)
 
-	def SetData(self, value: any, date: date):
+	def SetData(self, type: str, value: any, date: date):
 
 		# Форматирование даты.
 		year, month, day = self.__Format(date)
@@ -108,7 +102,11 @@ class Row():
 			# Запись значения в ряд.
 			if year not in self.__Data["data"].keys(): self.__Data["data"][year] = dict()
 			if month not in self.__Data["data"][year].keys(): self.__Data["data"][year][month] = dict()
-			if day not in self.__Data["data"][year][month].keys(): self.__Data["data"][year][month][day] = value
+			if day not in self.__Data["data"][year][month].keys():
+				if type == "str":
+					self.__Data["data"][year][month][day] = dict([("type",f"{type}"), ("value",f"{value}")])
+				if type == "int":
+					self.__Data["data"][year][month][day] = dict([("type",f"{type}"), ("value", value)])
 
 			# Сохранение файла json.
 			self.__Save()
@@ -119,7 +117,8 @@ class Row():
 		year, month, day = self.__Format(date)
 
 		# Получение значения словаря на выбранную дату.
-		Value = self.__Data["data"][year][month][day] 
+		Value = self.__Data["data"][year][month][day]["value"]
+		
 		
 		return Value
 	
@@ -139,7 +138,7 @@ class Row():
 			# Сохранение файла json.
 			self.__Save()
 	
-	def ReplaceValue(self, value: any, date: date):
+	def ReplaceValue(self, type: str, value: any, date: date):
 
 		# Форматирование даты.
 		year, month, day = self.__Format(date)
@@ -148,7 +147,10 @@ class Row():
 		if self.__CheckUp(year, month, day):
 
 			# Замена значения в ряду.
-			self.__Data["data"][year][month][day] = value
+			if type == "str":
+				self.__Data["data"][year][month][day] = dict([("type",f"{type}"), ("value",f"{value}")])
+			if type == "int":
+				self.__Data["data"][year][month][day] = dict([("type",f"{type}"), ("value", value)])
 
 			# Сохранение файла json.
 			self.__Save()
@@ -175,7 +177,7 @@ class Row():
 				Segment[datekey] = values
 
 		OrderedSegment = OrderedDict(sorted(Segment.items()))
-  
+		
 		return OrderedSegment
 	
 	def SetBaseValue(self, key: str, value: str):
@@ -213,7 +215,5 @@ class Row():
 
 
 
-
-
-
+Row(3).GetSegment(date(2023,5,10), date(2024, 5, 10))
 
