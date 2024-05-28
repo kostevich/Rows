@@ -1,16 +1,17 @@
 
 class Interpretator():
     def __init__(self) -> None:
+
         self.__CommandList = list()
         self.__AddCommands()
 
     def __HandlerCommandLine(self, CommandLine):
-        try:
-            if CommandLine in self.__CommandList: self.__HandlerCommands()
-        except TypeError as e: print(e)
+        
+        if CommandLine in self.__CommandList: self.__HandlerCommands()
+        else: print("Command not found")
 
     def __HandlerCommands(self):
-        pass
+        print("Processing the command")
 
     def __AddCommands(self):
         self.__CommandList.append("createrow")
@@ -20,8 +21,9 @@ class Interpretator():
 
     def Run(self):
         while True:
-            CommandLine = input()
+            CommandLine = input("Rows: ")
 
             if CommandLine != "": self.__HandlerCommandLine(CommandLine)
+            else: CommandLine = input("Rows: ")
 
 Interpretator().Run()
