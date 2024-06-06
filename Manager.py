@@ -13,13 +13,13 @@ class Manager():
         self.__Rows = dict()
 
         # Получение словаря рядов.
-        self.__GetDictRows()
+        self.__InitializeRows()
 
-    def __GetDictRows(self):
-        """ Запись словаря, где ключ - ID; значение - объект Rows."""
+    def __InitializeRows(self):
+        """Инициализирует объектные представления существующих рядов."""
 
         # Получение списка файлов json.
-        RowsID = self.__GetRowsID()
+        RowsID = self.GetRowsID()
 
         # Запись словаря значениями ID.
         for ID in RowsID:
@@ -33,19 +33,6 @@ class Manager():
         Files = list(filter(lambda List: List.endswith(".json"), Files))
 
         return Files
-
-    def __GetRowsID(self) -> list[int]:
-
-        # Получение списка файлов json.
-        Files = self.__GetFiles()
-
-        # Список ID.
-        RowsID = list()
-
-        # Для каждого файла получить ID.
-        for File in Files: RowsID.append(int(File.replace(".json", "")))
-
-        return RowsID
     
     def __GetFreeID(self):
 
@@ -86,7 +73,7 @@ class Manager():
         # Запись ID.
         self.__Rows[ID] = Row(ID)
     
-    def RemoveRow(self, ID):
+    def DeleteRow(self, ID):
 
 		# Сохранение ID файла, который требуется удалить.
         self.ID = ID
@@ -96,5 +83,16 @@ class Manager():
     
     def GetRow(self, ID) -> Row:
         return self.__Rows[ID]
-    
-    
+
+    def GetRowsID(self) -> list[int]:
+
+        # Получение списка файлов json.
+        Files = self.__GetFiles()
+
+        # Список ID.
+        RowsID = list()
+
+        # Для каждого файла получить ID.
+        for File in Files: RowsID.append(int(File.replace(".json", "")))
+
+        return RowsID
