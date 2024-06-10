@@ -31,13 +31,14 @@ class Manager():
         Files = os.listdir("Data")
         # Фильтрация только файлов формата JSON.
         Files = list(filter(lambda List: List.endswith(".json"), Files))
+        Files.sort()
 
         return Files
     
     def __GetFreeID(self):
 
         # Получение списка ID.
-        RowsID = self.__GetRowsID()
+        RowsID = self.GetRowsID()
 
         # Получение списка файлов json.
         Files = self.__GetFiles()

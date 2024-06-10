@@ -5,7 +5,7 @@
 import pyecharts.options as opts
 from pyecharts.charts import Line
 from Painter import Painter
-from datetime  import date
+from datetime import date
 from Row import Row
 
 class SimpleChart():

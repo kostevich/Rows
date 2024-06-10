@@ -119,7 +119,6 @@ class Row():
 		# Получение значения словаря на выбранную дату.
 		Value = self.__Data["data"][year][month][day]["value"]
 		
-		
 		return Value
 	
 	def RemoveValue(self, date: date):
@@ -211,9 +210,4 @@ class Row():
 			Value = self.__Data[Value1][Value2]
 
 		return Value
-
-
-
-
-Row(3).GetSegment(date(2023,5,10), date(2024, 5, 10))
 
