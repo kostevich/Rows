@@ -16,11 +16,7 @@ class Row():
 	@property
 	def color(self):
 		return self.GetValue("color")
-	
-	@property
-	def owner(self):
-		return self.GetValue("owner")	
-	
+		
 	@property
 	def creation_date(self):
 		return self.GetValue("metainfo/creation_date")
@@ -38,7 +34,6 @@ class Row():
 		self.__Data = {
 			"name": None,
 			"color": None,
-			"owner": None,
 			"description": {},
 			"metainfo": {
 			"creation_date": f"{year}-{month}-{day}",
@@ -117,11 +112,14 @@ class Row():
 		year, month, day = self.__Format(date)
 
 		# Получение значения словаря на выбранную дату.
-		Value = self.__Data["data"][year][month][day]["value"]
+		try:
+			Value = self.__Data["data"][year][month][day]["value"] 
+		except KeyError:
+			Value = ""
 		
 		return Value
 	
-	def RemoveValue(self, date: date):
+	def RemoveData(self, date: date):
 			
 		# Форматирование даты.
 		year, month, day = self.__Format(date)
@@ -137,14 +135,14 @@ class Row():
 			# Сохранение файла json.
 			self.__Save()
 	
-	def ReplaceValue(self, type: str, value: any, date: date):
+	def ReplaceData(self, type: str, value: any, date: date):
 
 		# Форматирование даты.
 		year, month, day = self.__Format(date)
-
+		
 		# Если значение в ряду существует.
 		if self.__CheckUp(year, month, day):
-
+			input(type)
 			# Замена значения в ряду.
 			if type == "str":
 				self.__Data["data"][year][month][day] = dict([("type",f"{type}"), ("value",f"{value}")])
@@ -179,7 +177,7 @@ class Row():
 		
 		return OrderedSegment
 	
-	def SetBaseValue(self, key: str, value: str):
+	def SetNameColor(self, key: str, value: str):
 		self.__Data[key] = value
 
 		# Сохранение файла json.
@@ -200,7 +198,7 @@ class Row():
 		# Сохранение файла json.
 		self.__Save()
 
-	def GetValue(self, path: str) -> str:
+	def GetSettings(self, path: str) -> str:
 		
 		Count = path.count("/")
 
@@ -210,4 +208,3 @@ class Row():
 			Value = self.__Data[Value1][Value2]
 
 		return Value
-
