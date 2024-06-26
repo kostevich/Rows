@@ -1,5 +1,5 @@
 from dublib.Terminalyzer import ArgumentsTypes, Command, Terminalyzer, NotEnoughArguments
-from dublib.Methods import Cls
+from dublib.Methods.System import Cls
 from Manager import Manager
 from Row import Row
 from datetime import date
@@ -41,8 +41,13 @@ class Interpretator():
 
 		Com = Command("add")
 		Com.add_argument(ArgumentsTypes.Number, important = True)
-		Com.add_key_position(["day", "today"], ArgumentsTypes.All)
+		Com.add_key_position(["day"], ArgumentsTypes.All, important = True)
 		Com.add_key_position(["value"], ArgumentsTypes.All, important = True)
+		CommandsList.append(Com)
+
+		Com = Command("remove")
+		Com.add_argument(ArgumentsTypes.Number, important = True)
+		Com.add_key_position(["day"], ArgumentsTypes.All, important = True)
 		CommandsList.append(Com)
 
 		return CommandsList
@@ -79,6 +84,7 @@ class Interpretator():
 				day = ParsedCommand.values["day"]
 			value = ParsedCommand.values["value"]
 			typevalue = type(value).__name__
+			if value.isdigit(): typevalue = "int"
 			try:
 				row = self.__manager.GetRow(id)
 				Date = dateparser.parse(day).date()
@@ -89,7 +95,19 @@ class Interpretator():
 					row.SetData(typevalue, value, Date)
 			except KeyError:
 				print("Такого ряда не существует.")
-			
+
+		if "remove" in ParsedCommand.name:
+			id = int(ParsedCommand.arguments[0])
+			if "day" in ParsedCommand.keys:
+				day = ParsedCommand.values["day"]
+				Date = dateparser.parse(day).date()
+			try:
+				row = self.__manager.GetRow(id)
+				row.RemoveData(Date)
+			except KeyError:
+				print("Такого ряда не существует.")
+
+
 	def Run(self):
 		while True:
 			CommandLine = input("->")
