@@ -10,22 +10,22 @@ import os
 class Row():
 
 	@property
-	def name(self):
+	def name(self) -> str:
 		return self.GetSettings("name")
 	
 	@property
-	def color(self):
+	def color(self)-> str:
 		return self.GetSettings("color")
 		
 	@property
-	def creation_date(self):
+	def creation_date(self)-> str:
 		return self.GetSettings("metainfo/creation_date")
 	
 	@property
-	def update_date(self):
+	def update_date(self)-> str:
 		return self.GetSettings("metainfo/update_date")
 	
-	def __init__(self, ID: int):
+	def __init__(self, ID: int) -> None:
 
 		# Форматирование даты.
 		year, month, day = self.__Format(date.today())
@@ -81,12 +81,12 @@ class Row():
 		
 		return Date
 
-	def __Save(self):
+	def __Save(self) -> None:
 
 		# Сохранение файла json.
 		WriteJSON(f"Data/{self.ID}.json", self.__Data)
 
-	def SetData(self, type: str, value: any, date: date):
+	def SetData(self, type: str, value: any, date: date)-> None:
 
 		# Форматирование даты.
 		year, month, day = self.__Format(date)
@@ -119,34 +119,32 @@ class Row():
 		
 		return Value
 	
-	def RemoveData(self, date: date):
+	def RemoveData(self, date: date)-> None:
 			
 		# Форматирование даты.
 		year, month, day = self.__Format(date)
-		print(self.__Data)
 
-		# Если значение в ряду не существует.
-		if self.__CheckUp(year, month, day):
-		
-			# Запись значения в ряд.
-			if year not in self.__Data["data"].keys(): self.__Data["data"][year] = dict()
-			print(self.__Data)
-			if month not in self.__Data["data"][year].keys(): self.__Data["data"][year][month] = dict()
-			print(self.__Data)
-			if day in self.__Data["data"][year][month].keys(): del self.__Data["data"][year][month][day]
-			print(self.__Data)
+		# Если значение в ряду существует.
+		if self.__CheckUp(year, month, day)== True:
+			if day not in self.__Data["data"][year][month][day].keys(): del self.__Data["data"][year][month][day]
 
+			if not self.__Data["data"][year][month]: del self.__Data["data"][year][month]
+
+			if not self.__Data["data"][year]: del self.__Data["data"][year]
+			
 			# Сохранение файла json.
 			self.__Save()
 	
-	def ReplaceData(self, type: str, value: any, date: date):
+		else: print("Такой даты не существует")
+
+	def ReplaceData(self, type: str, value: any, date: date)-> None:
 
 		# Форматирование даты.
 		year, month, day = self.__Format(date)
 		
 		# Если значение в ряду существует.
 		if self.__CheckUp(year, month, day):
-			input(type)
+
 			# Замена значения в ряду.
 			if type == "str":
 				self.__Data["data"][year][month][day] = dict([("type",f"{type}"), ("value",f"{value}")])
@@ -181,19 +179,19 @@ class Row():
 		
 		return OrderedSegment
 	
-	def SetNameColor(self, key: str, value: str):
+	def SetNameColor(self, key: str, value: str)-> None:
 		self.__Data[key] = value
 
 		# Сохранение файла json.
 		self.__Save()
 
-	def SetDescription(self, key: str, value: str):
+	def SetDescription(self, key: str, value: str)-> None:
 		self.__Data["description"][key] = value
 
 		# Сохранение файла json.
 		self.__Save()
 
-	def SetMetaInfo(self, key: str):
+	def SetMetaInfo(self, key: str)-> None:
 
 		year, month, day = self.__Format(date.today())
 

@@ -14,14 +14,17 @@ pip install -r requirements.txt
 ```
 python main.py
 ``` 
-5. Консольные команды: 
-- exit
-- clear
-- createrow
-- deleterow
-- listrows
-- set
-- add
+
+# Консольные команды: 
+- exit - выход из скрипта.
+- clear - очистка консоли.
+- createrow - создание нового ряда.
+- deleterow - удаление ряда.
+- listrows - вывод названий рядов.
+- set - добавление дополнительных данных ряда.
+- add - добавление контролируемого значения за день.
+- remove - удаление значения за день.
+- build - построение графика.
 
 ---
 _Copyright © Dub Irina. 2024._

@@ -2,12 +2,12 @@
 # >>>>> ПОДКЛЮЧЕНИЕ БИБЛИОТЕК И МОДУЛЕЙ <<<<< #
 #==========================================================================================#
 
-from Row import Row
+from Source.Row import Row
 import os
 
 class Manager():
     
-    def __init__(self):
+    def __init__(self) -> None:
 
         # Словарь рядов.
         self.__Rows = dict()
@@ -15,7 +15,7 @@ class Manager():
         # Получение словаря рядов.
         self.__InitializeRows()
 
-    def __InitializeRows(self):
+    def __InitializeRows(self) -> None:
         """Инициализирует объектные представления существующих рядов."""
 
         # Получение списка файлов json.
@@ -35,7 +35,7 @@ class Manager():
 
         return Files
     
-    def __GetFreeID(self):
+    def __GetFreeID(self) -> int:
 
         # Получение списка ID.
         RowsID = self.GetRowsID()
@@ -66,7 +66,7 @@ class Manager():
 
         return ID
 
-    def CreateRow(self):
+    def CreateRow(self) -> None:
 
         # Получение свободного ID.
         ID = self.__GetFreeID()
@@ -74,7 +74,7 @@ class Manager():
         # Запись ID.
         self.__Rows[ID] = Row(ID)
     
-    def DeleteRow(self, ID):
+    def DeleteRow(self, ID: int) -> None:
 
 		# Сохранение ID файла, который требуется удалить.
         self.ID = ID
