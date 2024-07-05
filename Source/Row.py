@@ -4,7 +4,7 @@
 
 from dublib.Methods.JSON import WriteJSON, ReadJSON
 from collections import OrderedDict
-from datetime import date
+from datetime import datetime
 import os
 
 class Row():
@@ -25,19 +25,23 @@ class Row():
 	def update_date(self)-> str:
 		return self.GetSettings("metainfo/update_date")
 	
+	@property
+	def description(self) -> str:
+		return self.GetSettings("description")
+	
 	def __init__(self, ID: int) -> None:
 
 		# Форматирование даты.
-		year, month, day = self.__Format(date.today())
+		year, month, day = self.__FormatDate(datetime.now())
 
 		# Данные ряда.
 		self.__Data = {
 			"name": None,
 			"color": None,
-			"description": {},
+			"description": None,
 			"metainfo": {
 			"creation_date": f"{year}-{month}-{day}",
-				"update_date": None
+				"update_date": None,
 			},
 			"data": {}
 	}	
@@ -48,7 +52,7 @@ class Row():
 		if os.path.exists(f"Data/{self.ID}.json"): self.__Data = ReadJSON(f"Data/{self.ID}.json")
 
 		# Если нет - запись JSON.
-		else: self.__Save()
+		else: self.__Save(False)
 
 	def __CheckUp(self, year: str, month: str, day: str) -> bool:
 
@@ -62,7 +66,7 @@ class Row():
 
 		return IsExists
 
-	def __Format(self, date: date) -> str:
+	def __FormatDate(self, date: datetime) -> str:
 		"""Форматирует datetime в набор строковых величин.
 		Year - строковое представление четырёхзначного число.
 		Month - строковое представление двухзначного числа.
@@ -74,22 +78,35 @@ class Row():
 		
 		return Year, Month, Day
 	
-	def __Standart(self, year: str, month: str, day: str) -> date:
+	def __FormatTime(self, time: datetime) -> str:
+
+		Hour = time.strftime("%H")   
+		Minutes = time.strftime("%M")
+		Seconds = time.strftime("%S")
+		
+		return Hour, Minutes, Seconds
+	
+	def __Standart(self, year: str, month: str, day: str) -> datetime:
 		"""Форматирует строковое прредставление в date."""
 
-		Date = date(int(year), int(month), int(day))
+		Date = datetime(int(year), int(month), int(day))
 		
 		return Date
 
-	def __Save(self) -> None:
+	def __Save(self, update: bool = True) -> None:
+		if update == True: 
+
+			year, month, day = self.__FormatDate(datetime.now())
+			hour, minutes, seconds = self.__FormatTime(datetime.now())
+			self.__Data["metainfo"]["update_date"] = (f"{year}-{month}-{day} {hour}:{minutes}:{seconds}")
 
 		# Сохранение файла json.
 		WriteJSON(f"Data/{self.ID}.json", self.__Data)
 
-	def SetData(self, type: str, value: any, date: date)-> None:
+	def SetData(self, type: str, value: any, date: datetime)-> None:
 
 		# Форматирование даты.
-		year, month, day = self.__Format(date)
+		year, month, day = self.__FormatDate(date)
 
 		# Если значение в ряду не существует.
 		if not self.__CheckUp(year, month, day):
@@ -106,10 +123,10 @@ class Row():
 			# Сохранение файла json.
 			self.__Save()
 
-	def GetData(self, date: date) -> any:
+	def GetData(self, date: datetime) -> any:
 		
 		# Форматирование даты.
-		year, month, day = self.__Format(date)
+		year, month, day = self.__FormatDate(date)
 
 		# Получение значения словаря на выбранную дату.
 		try:
@@ -119,7 +136,7 @@ class Row():
 		
 		return Value
 	
-	def RemoveData(self, date: date)-> None:
+	def RemoveData(self, date: datetime)-> None:
 			
 		# Форматирование даты.
 		year, month, day = self.__Format(date)
@@ -137,10 +154,10 @@ class Row():
 	
 		else: print("Такой даты не существует")
 
-	def ReplaceData(self, type: str, value: any, date: date)-> None:
+	def ReplaceData(self, type: str, value: any, date: datetime)-> None:
 
 		# Форматирование даты.
-		year, month, day = self.__Format(date)
+		year, month, day = self.__FormatDate(date)
 		
 		# Если значение в ряду существует.
 		if self.__CheckUp(year, month, day):
@@ -154,7 +171,7 @@ class Row():
 			# Сохранение файла json.
 			self.__Save()
 
-	def GetSegment(self, startdate: date, enddate: date)-> dict:
+	def GetSegment(self, startdate: datetime, enddate: datetime)-> dict:
 
 		# Словарь всех значений сегмента.
 		Segment = dict()
@@ -179,21 +196,15 @@ class Row():
 		
 		return OrderedSegment
 	
-	def SetNameColor(self, key: str, value: str)-> None:
+	def SetNameColorDescription(self, key: str, value: str)-> None:
 		self.__Data[key] = value
-
-		# Сохранение файла json.
-		self.__Save()
-
-	def SetDescription(self, key: str, value: str)-> None:
-		self.__Data["description"][key] = value
 
 		# Сохранение файла json.
 		self.__Save()
 
 	def SetMetaInfo(self, key: str)-> None:
 
-		year, month, day = self.__Format(date.today())
+		year, month, day = self.__Format(datetime.now())
 
 		self.__Data["metainfo"][key] = str(f"{year}-{month}-{day}")
 
@@ -209,4 +220,4 @@ class Row():
 			Value1, Value2 = path.split("/")
 			Value = self.__Data[Value1][Value2]
 
-		return Value
+		return Value		

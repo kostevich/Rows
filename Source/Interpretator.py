@@ -39,6 +39,7 @@ class Interpretator():
 		ComPos = Com.create_position(important = True)
 		ComPos.add_key("name")
 		ComPos.add_key("color")
+		ComPos.add_key("description")
 		CommandsList.append(Com)
 
 		Com = Command("add")
@@ -77,16 +78,17 @@ class Interpretator():
 			AllId = self.__manager.GetRowsID()
 
 			for Id in AllId:
-				print(f"{self.__manager.GetRow(Id).ID}. {self.__manager.GetRow(Id).name}")
+				print(f"{self.__manager.GetRow(Id).ID}. {self.__manager.GetRow(Id).name}: {self.__manager.GetRow(Id).description} - {self.__manager.GetRow(Id).update_date}")
 		
 		if "set" in ParsedCommand.name:
-			if "name" in ParsedCommand.keys:
-				key = "name"
-			else: key = "color"
+			if "name" in ParsedCommand.keys: key = "name"
+			if "color" in ParsedCommand.keys: key = "color"
+			if "description" in ParsedCommand.keys: key = "description"
+
 			id = int(ParsedCommand.arguments[0])
 			value = ParsedCommand.keys[key]
 			row = self.__manager.GetRow(id)
-			row.SetNameColor(key, value)
+			row.SetNameColorDescription(key, value)
 
 		if "add" in ParsedCommand.name:
 			id = int(ParsedCommand.arguments[0])
