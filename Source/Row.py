@@ -12,10 +12,6 @@ class Row():
 	@property
 	def name(self) -> str:
 		return self.GetSettings("name")
-	
-	@property
-	def color(self)-> str:
-		return self.GetSettings("color")
 		
 	@property
 	def creation_date(self)-> str:
@@ -37,7 +33,6 @@ class Row():
 		# Данные ряда.
 		self.__Data = {
 			"name": None,
-			"color": None,
 			"description": None,
 			"metainfo": {
 			"creation_date": f"{year}-{month}-{day}",
@@ -196,7 +191,7 @@ class Row():
 		
 		return OrderedSegment
 	
-	def SetNameColorDescription(self, key: str, value: str)-> None:
+	def SetNameDescription(self, key: str, value: str)-> None:
 		self.__Data[key] = value
 
 		# Сохранение файла json.
@@ -221,3 +216,16 @@ class Row():
 			Value = self.__Data[Value1][Value2]
 
 		return Value		
+
+	def GetTemplateExpressions(self, path: str) -> set:
+		Data = set()
+		with open(path) as template:
+			lines = template.readlines()
+			for line in lines:
+				splitline = line.split(" ")
+				for segment in splitline:
+					if segment.startswith("{") and segment.endswith("}"): Data.add(segment)
+
+		return Data
+
+

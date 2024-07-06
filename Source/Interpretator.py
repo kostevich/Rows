@@ -3,6 +3,7 @@ from dublib.Methods.System import Cls
 from Source.Manager import Manager
 from Source.Row import Row
 from Graphics.Painter import Painter
+from prettytable import PrettyTable
 import readline
 import shlex
 import webbrowser
@@ -18,45 +19,46 @@ class Interpretator():
 
 		CommandsList = list()
 
-		Com = Command("exit")
+		Com = Command("exit", "Выход из скрипта.")
 		CommandsList.append(Com)
 
-		Com = Command("clear")
+		Com = Command("clear", "Очистка консоли.")
 		CommandsList.append(Com)
 
-		Com = Command("createrow")
+		Com = Command("createrow", "Создание нового ряда.")
+		Com.add_flag("w", "Заполнение данных для нового ряда.")
 		CommandsList.append(Com)
 
-		Com = Command("deleterow")
-		Com.add_argument(ParametersTypes.Number, important = True)
+		Com = Command("deleterow", "Удаление ряда.")
+		Com.add_argument(ParametersTypes.Number, "ID ряда.", important=True)
 		CommandsList.append(Com)
 
-		Com = Command("listrows")
+		Com = Command("listrows", "Вывод основных данных рядов в консоль.")
 		CommandsList.append(Com)
 
-		Com = Command("set")
-		Com.add_argument(ParametersTypes.Number, important = True)
-		ComPos = Com.create_position(important = True)
-		ComPos.add_key("name")
-		ComPos.add_key("color")
-		ComPos.add_key("description")
+		Com = Command("set", "Добавление данных для ряда.")
+		Com.add_argument(ParametersTypes.Number, "ID ряда.", important=True)
+		ComPos = Com.create_position(important=True)
+		ComPos.add_key("name", "Имя ряда")
+		ComPos.add_key("color", "Цвет ряда.")
+		ComPos.add_key("description", "Описание ряда.")
 		CommandsList.append(Com)
 
-		Com = Command("add")
-		Com.add_argument(ParametersTypes.Number, important = True)
-		Com.add_key("day", ParametersTypes.Date, important = True)
-		Com.add_key("value", ParametersTypes.All, important = True)
+		Com = Command("add", "Добавление значения в ряд.")
+		Com.add_argument(ParametersTypes.Number, "ID ряда", important = True)
+		Com.add_key("day", ParametersTypes.Date, "Дата, для которой присваивается значение.", important = True)
+		Com.add_key("value", ParametersTypes.All, "Значение.", important = True)
 		CommandsList.append(Com)
 
-		Com = Command("remove")
-		Com.add_argument(ParametersTypes.Number, important = True)
-		Com.add_key("day", ParametersTypes.Date, important = True)
+		Com = Command("remove", "Удаление значения в ряду.")
+		Com.add_argument(ParametersTypes.Number, "ID ряда", important = True)
+		Com.add_key("day", ParametersTypes.Date, "Дата, для которой удаляется значение.", important = True)
 		CommandsList.append(Com)
 
-		Com = Command("build")
-		Com.add_argument(ParametersTypes.Number, important = True)
-		Com.add_key("sday", ParametersTypes.Date, important = True)
-		Com.add_key("eday", ParametersTypes.Date, important = True)
+		Com = Command("build", "Построение таблицы.")
+		Com.add_argument(ParametersTypes.Number, "ID ряда",  important = True)
+		Com.add_key("sday", ParametersTypes.Date, "Дата, с которой начинается построение ряда",  important = True)
+		Com.add_key("eday", ParametersTypes.Date, "Дата, которой заканчивается построение ряда",  important = True)
 		CommandsList.append(Com)
 
 		return CommandsList
@@ -69,26 +71,44 @@ class Interpretator():
 			Cls()
 
 		if "createrow" in ParsedCommand.name:
-			self.__manager.CreateRow()
+			ID = self.__manager.CreateRow()
+			if ParsedCommand.check_flag("w") == True:
+				row = self.__manager.GetRow(ID)
+				data = row.GetTemplateExpressions("Templates/start.txt")				
 		
 		if "deleterow" in ParsedCommand.name:
 			self.__manager.DeleteRow(ParsedCommand.arguments[0])
 
 		if "listrows" in ParsedCommand.name:
-			AllId = self.__manager.GetRowsID()
+			
+			mytable = PrettyTable()
+			mytable.border = False
+			Data = {
+					"ID": [],
+					"Name": [],
+					"Description": [],
+					"Last_update": [],
+			}
 
-			for Id in AllId:
-				print(f"{self.__manager.GetRow(Id).ID}. {self.__manager.GetRow(Id).name}: {self.__manager.GetRow(Id).description} - {self.__manager.GetRow(Id).update_date}")
-		
+			for Id in self.__manager.GetRowsID():
+				Data["ID"].append(self.__manager.GetRow(Id).ID)
+				Data["Name"].append(self.__manager.GetRow(Id).name)
+				Data["Description"].append(self.__manager.GetRow(Id).description)
+				Data["Last_update"].append(self.__manager.GetRow(Id).update_date)
+				
+			for ColumnName in Data.keys():
+				mytable.add_column(ColumnName, Data[ColumnName])
+
+			print(mytable)
+
 		if "set" in ParsedCommand.name:
 			if "name" in ParsedCommand.keys: key = "name"
-			if "color" in ParsedCommand.keys: key = "color"
 			if "description" in ParsedCommand.keys: key = "description"
 
 			id = int(ParsedCommand.arguments[0])
 			value = ParsedCommand.keys[key]
 			row = self.__manager.GetRow(id)
-			row.SetNameColorDescription(key, value)
+			row.SetNameDescription(key, value)
 
 		if "add" in ParsedCommand.name:
 			id = int(ParsedCommand.arguments[0])

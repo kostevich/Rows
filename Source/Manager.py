@@ -66,13 +66,15 @@ class Manager():
 
         return ID
 
-    def CreateRow(self) -> None:
+    def CreateRow(self) -> int:
 
         # Получение свободного ID.
         ID = self.__GetFreeID()
 
         # Запись ID.
         self.__Rows[ID] = Row(ID)
+
+        return ID
     
     def DeleteRow(self, ID: int) -> None:
 
