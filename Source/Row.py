@@ -217,15 +217,5 @@ class Row():
 
 		return Value		
 
-	def GetTemplateExpressions(self, path: str) -> set:
-		Data = set()
-		with open(path) as template:
-			lines = template.readlines()
-			for line in lines:
-				splitline = line.split(" ")
-				for segment in splitline:
-					if segment.startswith("{") and segment.endswith("}"): Data.add(segment)
-
-		return Data
 
 

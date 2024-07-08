@@ -1,19 +1,33 @@
 from dublib.CLI.Terminalyzer import Command, Terminalyzer, NotEnoughParameters, ParametersTypes, ParsedCommandData
 from dublib.Methods.System import Cls
 from Source.Manager import Manager
-from Source.Row import Row
 from Graphics.Painter import Painter
+from Templater import Templater
 from prettytable import PrettyTable
 import readline
 import shlex
 import webbrowser
+import keyboard
 
-class Interpretator():
+
+
+class Interpreter():
 	def __init__(self) -> None:
 
 		self.__manager = Manager()
+		self.__templater = Templater()
 		self.__painter = Painter()
 		self.__AddCommands()
+
+	def __HandlerCommandLine(self, CommandLine: str):
+
+		CommandLine = CommandLine.strip()
+		CommandLine = shlex.split(CommandLine) if len(CommandLine) > 0 else [""]
+		ParsedCommand = Terminalyzer(CommandLine).check_commands(self.__AddCommands())
+		if ParsedCommand != None:
+			self.__HandlerCommand(ParsedCommand)
+		else:
+			print("Команда не найдена.")
 
 	def __AddCommands(self)-> list:
 
@@ -63,7 +77,7 @@ class Interpretator():
 
 		return CommandsList
 	
-	def __HandlerCommandLine(self, ParsedCommand: ParsedCommandData) -> None:
+	def __HandlerCommand(self, ParsedCommand: ParsedCommandData) -> None:
 		if "exit" in ParsedCommand.name:
 			exit(0)
 		
@@ -74,8 +88,10 @@ class Interpretator():
 			ID = self.__manager.CreateRow()
 			if ParsedCommand.check_flag("w") == True:
 				row = self.__manager.GetRow(ID)
-				data = row.GetTemplateExpressions("Templates/start.txt")				
-		
+				splits = self.__templater.GetCommands("Templates/start.txt")
+				expressions = self.__templater.GetTemplateExpressions(splits)
+				print("->->->->->->->->->-> ЗАПОЛНЕНИЕ НАСТРОЕК РЯДА ->->->->->->->->->->")
+
 		if "deleterow" in ParsedCommand.name:
 			self.__manager.DeleteRow(ParsedCommand.arguments[0])
 
@@ -146,16 +162,8 @@ class Interpretator():
 	def Run(self) -> None:
 		while True:
 			CommandLine = input("->")
-			CommandLine = CommandLine.strip()
-			CommandLine = shlex.split(CommandLine) if len(CommandLine) > 0 else [""]
-
 			try:
-				ParsedCommand = Terminalyzer(CommandLine).check_commands(self.__AddCommands())
-				if ParsedCommand != None:
-					self.__HandlerCommandLine(ParsedCommand)
-				else:
-					print("Команда не найдена.")
-
+				self.__HandlerCommandLine(CommandLine)
 			except FileNotFoundError:
 				print("Этот ряд был удалён.")
 			

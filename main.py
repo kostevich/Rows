@@ -1,6 +1,6 @@
 #==========================================================================================#
 # >>>>> ПОДКЛЮЧЕНИЕ БИБЛИОТЕК И МОДУЛЕЙ <<<<< #
 #==========================================================================================#
-from Source.Interpretator import Interpretator
+from Source.Interpreter import Interpreter
 
-Interpretator().Run()
+Interpreter().Run()
